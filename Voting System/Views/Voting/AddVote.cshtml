@@ -1,0 +1,124 @@
+﻿@model Voting_System.Models.VoteMain
+@{
+    ViewBag.Title = "AddVote";
+}
+
+<h2>AddVote</h2>
+
+<div class="container">
+    <h2>Add New Vote</h2>
+    @using (Html.BeginForm("AddVote", "Voting", FormMethod.Post, new { @id = "FormAdd" }))
+    {
+        <p class="alert alert-info">All fields are <strong>required</strong></p>
+
+
+        @Html.AntiForgeryToken()
+        @Html.Hidden("ValuesDetails")
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.MainQuestion)
+                    @Html.TextBoxFor(m => m.MainQuestion, new { @class = "form-control", autofocus = "autofocus" })
+                    @Html.ValidationMessageFor(m => m.MainQuestion)
+
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="form-group">
+                    <label>Max of Answers</label>
+                    <input type="text" class="form-control" id="Answer" name="Answer" value="">Number of members: (max. 10)<br />
+                    <a href="#" id="filldetails" onclick="addFields()">Add Options</a>
+                </div>
+            </div>
+
+
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+
+                <div class="form-group">
+                    <div id="container">
+
+                    </div>
+                </div>
+            </div>
+           
+            
+        </div>
+        <div class="col-md-6">
+
+            @*<div class="form-group">
+
+                </div>*@
+
+            <button type="button" onclick="GetAllValues()" class="btn btn-primary btn-lg" id="save">Save</button>
+
+            <a class="btn btn-default  btn-lg" href="@Url.Action("Index","Home")">Back to list</a>
+        </div>
+
+    }
+</div>
+<script type='text/javascript'>
+    var datavalues = "";
+    function addFields() {
+        // Number of inputs to create
+        var number = document.getElementById("Answer").value;
+        // Container <div> where dynamic content will be placed
+        var container = document.getElementById("container");
+        // Clear previous contents of the container
+        while (container.hasChildNodes()) {
+            container.removeChild(container.lastChild);
+        }
+        for (i = 0; i < number; i++) {
+            // Append a node with a random text
+            container.appendChild(document.createTextNode("Answer " + (i + 1)));
+            // Create an <input> element, set its type and name attributes
+            var input = document.createElement("input");
+            input.type = "text";
+            input.name = "Answer" + i;
+            input.className = "form-control Ans"
+            container.appendChild(input);
+            // Append a line break
+            container.appendChild(document.createElement("br"));
+        }
+    }
+
+
+
+
+    function GetAllValues() {
+        
+        $('.Ans').each(function () {
+            datavalues += $(this).val()+",";
+
+        }
+
+           
+        );
+        debugger
+        $("#ValuesDetails").val(datavalues);
+
+       
+        //$("#FormAdd").submit();
+       
+
+            var form = $("#FormAdd");
+            var url = form.attr('action');
+            var main = $("#MainQuestion").val();
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: { "MainQ": main, "ValuesDetails": datavalues}, // serializes the form's elements.
+                success: function (data) {
+                    alert(data);
+                    $("#FormAdd").trigger("reset");
+                    // show response from the php script.
+                }
+            });
+
+
+       
+        //alert("Added Succesfully");
+
+    }
+</script>

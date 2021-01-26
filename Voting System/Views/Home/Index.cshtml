@@ -1,0 +1,130 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+
+
+@model IEnumerable<Voting_System.Models.VoteMain>
+@{
+    ViewBag.Title = "Index";
+}
+
+
+
+
+
+
+
+
+
+
+<div class="jumbotron">
+
+    <p class="lead">Here you Can Vote For You Fav Subject , Enjoy</p>
+</div>
+
+
+<div class="container text-center">
+
+
+
+
+    <div class="gigs voffset4">
+        <div class="row ">
+            @foreach (var item in Model)
+            {
+
+
+                using (Html.BeginForm("Vote", "Home", FormMethod.Post, new { @class = "FormVote" }))
+                {
+                    var cc = "Del" + item.ID;
+
+
+                    <div class="@cc " style="margin-bottom:30px">
+                        <div class="date">
+                            @Html.Hidden("QuestionId", item.ID)
+                            <div class="month">
+                                @item.MainQuestion
+                            </div>
+
+                        </div>
+                        @foreach (var i in item.voterDetails.ToList())
+                        {
+                            var count=0;
+                            <div>
+                                <input type="radio"  name="AnswerID" value="@i.ID" /><label style="font-size:14px">@i.Answer</label>
+                                <div>
+                                   
+                                    @if (item.voterDetails.Sum(s=>s.VoteCount)>0)
+                                    {
+                                         count=((i.VoteCount * 100) / item.voterDetails.Sum(s => s.VoteCount));
+                                    }
+                                    <progress id="file" value="@count" max="100"> </progress>
+                                </div>
+
+                            </div>
+
+                        }
+
+                        <div class="actions">
+                            <button type="submit"
+                                    class="btn btn-sm btn-success">
+                                Vote
+                            </button>
+                        </div>
+
+
+
+
+
+
+
+
+                    </div>
+
+
+                }
+
+
+
+
+
+            }
+        </div>
+    </div>
+
+
+</div>
+
+
+@section scripts
+{
+    <script type="text/javascript">
+
+        var MasterUrl = "@Url.Action("index","Home")";
+        function reloadpage() {
+            window.location.href = MasterUrl;
+        }
+    </script>
+    <script type="text/javascript" src="~/Scripts/jquery.ajaxForm.js"></script>
+
+    <script type='text/javascript'>
+
+        $(document).ready(function () {
+          
+            $('.FormVote').ajaxForm({
+                dataType: "json",
+                Success: function (res) {
+                    //console.log("dddd")
+                    //debugger
+                    //alert(data);
+                }
+
+            });
+
+
+        });
+      
+    </script>
+
+}

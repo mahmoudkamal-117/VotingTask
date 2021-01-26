@@ -1,0 +1,279 @@
+﻿@model IEnumerable<Voting_System.Models.VoteMain>
+@{
+    ViewBag.Title = "Index";
+}
+
+
+
+
+
+
+
+<!-- Button trigger modal -->
+
+
+
+
+
+    <div class="container text-center">
+
+        <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#exampleModalCenter">
+            Add new Vote
+        </button>
+        <h2 class="h2 text-center" style="color:#000">M y  Vo t e s </h2>
+
+
+        <div class="gigs voffset4">
+            <div class="row ">
+                @foreach (var item in Model)
+                {
+
+                    
+                        
+                        
+                            var cc = "Del" + item.ID;
+                        
+
+                        <div class="@cc " style="margin-bottom:30px">
+                            <div class="date">
+                                <div class="month">
+                                    @item.MainQuestion
+                                </div>
+
+                            </div>
+                                @foreach (var i in item.voterDetails.ToList())
+                                {
+                                    <p @*class="atrist"*@>
+                                        <label class="">
+                                            @i.Answer
+                                        </label>
+                                    </p>
+
+                                    @*<span class="genre">
+                                @gig.Genre.Name
+                            </span>*@
+                                }
+
+                                <div class="actions">
+                                    <a onclick="deletefun(@item.ID)"
+                                       class="btn btn-sm btn-danger  Delete">
+                                        Delete
+                                    </a>
+                                </div>
+
+
+
+
+                           
+
+
+
+                        </div>
+                    
+
+
+
+                }
+            </div>
+            </div>
+
+            @*<div class="row">
+            @foreach (var item in Model)
+            {
+
+
+                var cc = "Del" + item.ID;
+
+
+                <div class="col-md-2 @cc">
+                    <div class="card" style="border:dotted">
+
+
+                        <h4>@item.MainQuestion</h4>
+                        @foreach (var i in item.voterDetails.ToList())
+                        {
+                            <p>   @i.Answer    </p>
+
+
+                        }
+
+                        <button onclick="deletefun(@item.ID)"
+                                class="btn btn-sm  Delete">
+                            Delete
+                        </button>
+                    </div>
+
+
+                </div>
+
+            }
+        </div>*@
+        </div>
+<!-- Modal -->
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                @using (Html.BeginForm("AddVote", "Voting", FormMethod.Post, new { @id = "FormAdd" }))
+                {
+                    <p class="alert alert-info">All fields are <strong>required</strong></p>
+
+
+                    @Html.AntiForgeryToken()
+                    @Html.Hidden("ValuesDetails")
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                @Html.Label("MainQuestion")
+                                @Html.TextBox("MainQuestion", null, new { @class = "form-control", autofocus = "autofocus" })
+
+
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label>Max of Answers</label>
+                                <input type="text" class="form-control" id="Answer" name="Answer" value="">Number of members: (max. 10)<br />
+                                <a href="#" id="filldetails" onclick="addFields()">Add Options</a>
+                            </div>
+                        </div>
+
+
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12">
+
+                            <div class="form-group">
+                                <div id="container">
+
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                    <div class="text-center">
+
+                        @*<div class="form-group">
+
+                            </div>*@
+
+                        <button type="button" onclick="GetAllValues()" class="btn btn-primary btn-lg" id="save">Save</button>
+
+                        <button type="button" class="btn btn-danger btn-lg" data-dismiss="modal">Close</button>
+                    </div>
+
+                }
+            </div>
+            <div class="modal-footer">
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts
+{
+    <script type='text/javascript'>
+        var locl = "@Url.Action("index","voting")";
+        var urldelete = "@Url.Action("delete","voting")";
+        var datavalues = "";
+        function addFields() {
+            // Number of inputs to create
+            var number = document.getElementById("Answer").value;
+            // Container <div> where dynamic content will be placed
+            var container = document.getElementById("container");
+            // Clear previous contents of the container
+            while (container.hasChildNodes()) {
+                container.removeChild(container.lastChild);
+            }
+            for (i = 0; i < number; i++) {
+                // Append a node with a random text
+                container.appendChild(document.createTextNode("Answer " + (i + 1)));
+                // Create an <input> element, set its type and name attributes
+                var input = document.createElement("input");
+                input.type = "text";
+                input.name = "Answer" + i;
+                input.className = "form-control Ans"
+                container.appendChild(input);
+                // Append a line break
+                container.appendChild(document.createElement("br"));
+            }
+        }
+
+
+        function deletefun(i) {
+            var id = i;
+            debugger
+            $.ajax({
+                type: "POST",
+                url: urldelete,
+                data: { "ID": id }, // serializes the form's elements.
+                success: function (data) {
+                    alert(data);
+                    debugger
+                    var ss = "Del" + i;
+                    $("." + ss).remove();
+                    // show response from the php script.
+                }
+            });
+        }
+
+
+
+
+        function GetAllValues() {
+
+            $('.Ans').each(function () {
+                datavalues += $(this).val() + ",";
+
+            }
+
+
+            );
+            debugger
+            $("#ValuesDetails").val(datavalues);
+
+
+            //$("#FormAdd").submit();
+            var main = $("#MainQuestion").val();
+            if (main === "") {
+                alert("please write your vote question");
+                return false
+            }
+
+            if (datavalues === "") {
+                alert("please write your vote answers");
+                return false
+            }
+            var form = $("#FormAdd");
+            var url = form.attr('action');
+           
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: { "MainQ": main, "ValuesDetails": datavalues }, // serializes the form's elements.
+                success: function (data) {
+                    alert(data);
+                    $("#FormAdd").trigger("reset");
+                    window.location.href = locl;
+                    // show response from the php script.
+                }
+            });
+
+
+
+            //alert("Added Succesfully");
+
+        }
+    </script>
+    
+}
